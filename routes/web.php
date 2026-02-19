@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -8,7 +9,7 @@ Route::get('/', function () {
 });
 
 Route::middleware(['auth'])->get('/dashboard', function () {
-    $user = auth()->user();
+    $user = Auth::user();
     
     if ($user->role === 'admin') {
         return redirect('/admin/dashboard');

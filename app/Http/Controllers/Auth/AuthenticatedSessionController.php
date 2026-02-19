@@ -14,9 +14,10 @@ class AuthenticatedSessionController extends Controller
     /**
      * Display the login view.
      */
-    public function create(): View
+    public function create(Request $request): View
     {
-        return view('auth.login');
+        $role = $request->route('role');
+        return view('auth.login', compact('role'));
     }
 
     /**
@@ -24,14 +25,28 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
+        $expectedRole = $request->route('role');
+
         $request->authenticate();
+        $role = Auth::user()?->role;
+
+        if ($expectedRole && $role !== $expectedRole) {
+            Auth::guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return back()->withErrors([
+                'email' => __('Credenciais inválidas para este perfil de acesso.'),
+            ])->onlyInput('email');
+        }
 
         $request->session()->regenerate();
 
-        return match (auth()->user()->role) {
+        return match ($role) {
             'patient' => redirect('/paciente/dashboard'),
             'professional' => redirect('/profissional/dashboard'),
             'admin' => redirect('/admin/dashboard'),
+            default => redirect('/dashboard'),
         };
     }
 

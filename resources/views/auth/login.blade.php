@@ -2,7 +2,24 @@
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
-    <form method="POST" action="{{ route('login') }}">
+    @php
+        $titles = ['admin' => 'Admin', 'professional' => 'Profissional', 'patient' => 'Paciente'];
+        $roleLabel = isset($role) && isset($titles[$role]) ? $titles[$role] : null;
+        $action = match($role ?? null) {
+            'admin' => route('admin.login'),
+            'professional' => route('profissional.login'),
+            'patient' => route('paciente.login'),
+            default => route('login'),
+        };
+    @endphp
+
+    @if($roleLabel)
+        <h2 class="text-center text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">
+            Acesso {{ $roleLabel }}
+        </h2>
+    @endif
+
+    <form method="POST" action="{{ $action }}">
         @csrf
 
         <!-- Email Address -->
