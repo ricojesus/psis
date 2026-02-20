@@ -17,6 +17,27 @@ Route::middleware('guest')->group(function () {
 
     Route::post('register', [RegisteredUserController::class, 'store']);
 
+    Route::get('admin/register/{role}', [RegisteredUserController::class, 'create'])
+                ->name('admin.register')
+                ->where('role', 'admin');
+
+    Route::post('admin/register/{role}', [RegisteredUserController::class, 'store'])
+                ->where('role', 'admin');
+
+    Route::get('profissional/register/{role}', [RegisteredUserController::class, 'create'])
+                ->name('profissional.register')
+                ->where('role', 'professional');
+
+    Route::post('profissional/register/{role}', [RegisteredUserController::class, 'store'])
+                ->where('role', 'professional');
+
+    Route::get('paciente/register/{role}', [RegisteredUserController::class, 'create'])
+                ->name('paciente.register')
+                ->where('role', 'patient');
+
+    Route::post('paciente/register/{role}', [RegisteredUserController::class, 'store'])
+                ->where('role', 'patient');
+
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
                 ->name('login');
 
